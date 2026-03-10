@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Checkout — HomeMade Pickles & Snacks{% endblock %}
+{% block extra_styles %}
+.checkout-page { max-width: 900px; margin: 2.5rem auto; padding: 0 2rem; }
+.checkout-page h1 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--brown); margin-bottom: 2rem; }
+.checkout-grid { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; align-items: start; }
+@media(max-width:700px) { .checkout-grid { grid-template-columns: 1fr; } }
+.form-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2rem;
+}
+.form-card h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--brown); margin-bottom: 1.5rem; padding-bottom: .8rem; border-bottom: 1px solid var(--border); }
+.form-group { margin-bottom: 1.1rem; }
+.form-group label { display: block; font-size: .9rem; color: var(--brown); margin-bottom: .4rem; font-weight: 600; }
+.form-group input, .form-group textarea {
+  width: 100%; padding: .7rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem; color: var(--text);
+  background: var(--cream); transition: border-color .2s; outline: none;
+}
+.form-group input:focus, .form-group textarea:focus { border-color: var(--amber); background: white; }
+.form-group textarea { resize: vertical; min-height: 80px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media(max-width:480px) { .form-row { grid-template-columns: 1fr; } }
+
+.order-summary {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  position: sticky; top: 80px;
+}
+.order-summary h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--brown); margin-bottom: 1.2rem; }
+.summary-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: .5rem 0; border-bottom: 1px solid var(--border);
+  font-size: .9rem;
+}
+.summary-item:last-of-type { border-bottom: none; }
+.item-emoji-sm { font-size: 1.2rem; margin-right: .4rem; }
+.total-row {
+  display: flex; justify-content: space-between;
+  font-size: 1.15rem; font-weight: 700; color: var(--brown);
+  margin-top: .8rem; padding-top: .8rem;
+  border-top: 2px solid var(--border);
+}
+.secure-badge {
+  display: flex; align-items: center; gap: .5rem;
+  background: var(--warm); border-radius: 4px; padding: .5rem .8rem;
+  margin-top: 1rem; font-size: .8rem; color: var(--muted);
+}
+{% endblock %}
+{% block content %}
+<div class="checkout-page">
+  <h1>Checkout</h1>
+  <div class="checkout-grid">
+    <div>
+      <form method="POST">
+        <div class="form-card" style="margin-bottom:1.5rem;">
+          <h2>📦 Delivery Details</h2>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" name="name" placeholder="Your name" required value="{{ session.get('user_name','') }}">
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Delivery Address</label>
+            <textarea name="address" placeholder="House no, Street, Area, City, State, PIN" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Landmark (Optional)</label>
+            <input type="text" name="landmark" placeholder="Near school / temple etc.">
+          </div>
+        </div>
+
+        <div class="form-card">
+          <h2>💳 Payment</h2>
+          <div style="background:var(--warm);border-radius:6px;padding:1rem;margin-bottom:1rem;">
+            <div style="display:flex;gap:.8rem;align-items:center;margin-bottom:.5rem;">
+              <input type="radio" name="payment" value="cod" id="cod" checked>
+              <label for="cod" style="font-size:1rem;cursor:pointer;">💵 Cash on Delivery</label>
+            </div>
+            <div style="display:flex;gap:.8rem;align-items:center;">
+              <input type="radio" name="payment" value="upi" id="upi">
+              <label for="upi" style="font-size:1rem;cursor:pointer;">📱 UPI / GPay (simulated)</label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-amber btn-full" style="padding:.9rem;font-size:1.1rem;">
+            🛒 Place Order — ₹{{ (total + (0 if total >= 500 else 50))|int }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="order-summary">
+      <h2>Your Items</h2>
+      {% for item in cart_items %}
+      <div class="summary-item">
+        <span><span class="item-emoji-sm">{{ item.get('emoji','🥒') }}</span>{{ item.name }} ×{{ item.qty }}</span>
+        <span>₹{{ (item.price|float * item.qty|int)|int }}</span>
+      </div>
+      {% endfor %}
+      <div class="summary-item">
+        <span>Delivery</span>
+        <span>{% if total >= 500 %}FREE{% else %}₹50{% endif %}</span>
+      </div>
+      <div class="total-row">
+        <span>Total</span>
+        <span>₹{{ (total + (0 if total >= 500 else 50))|int }}</span>
+      </div>
+      <div class="secure-badge">🔒 Secure & encrypted checkout</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

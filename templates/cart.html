@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Cart — HomeMade Pickles & Snacks{% endblock %}
+{% block extra_styles %}
+.cart-page { max-width: 900px; margin: 2.5rem auto; padding: 0 2rem; }
+.cart-page h1 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--brown); margin-bottom: 2rem; }
+.cart-grid { display: grid; grid-template-columns: 1fr 320px; gap: 2rem; align-items: start; }
+@media(max-width:700px) { .cart-grid { grid-template-columns: 1fr; } }
+.cart-items { }
+.cart-item {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 1rem;
+}
+.item-emoji { font-size: 2.5rem; }
+.item-info { flex: 1; }
+.item-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--brown); margin-bottom: .2rem; }
+.item-price { color: var(--amber); font-size: 1.05rem; font-weight: 600; }
+.item-qty { color: var(--muted); font-size: .88rem; }
+.remove-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: .4rem .8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: .85rem;
+  transition: all .2s;
+}
+.remove-btn:hover { border-color: var(--red); color: var(--red); }
+
+.cart-summary {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  position: sticky;
+  top: 80px;
+}
+.cart-summary h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--brown); margin-bottom: 1.2rem; }
+.summary-line {
+  display: flex; justify-content: space-between;
+  padding: .5rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .95rem;
+  color: var(--muted);
+}
+.summary-line:last-of-type { border-bottom: none; }
+.summary-total {
+  display: flex; justify-content: space-between;
+  padding: .8rem 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--brown);
+  margin-top: .5rem;
+}
+
+.empty-cart { text-align: center; padding: 4rem 0; }
+.empty-cart div { font-size: 4rem; margin-bottom: 1rem; }
+.empty-cart p { color: var(--muted); margin-bottom: 1.5rem; }
+{% endblock %}
+{% block content %}
+<div class="cart-page">
+  <h1>🛒 Your Cart</h1>
+
+  {% if cart_items %}
+  <div class="cart-grid">
+    <div class="cart-items">
+      {% for item in cart_items %}
+      <div class="cart-item">
+        <div class="item-emoji">{{ item.get('emoji','🥒') }}</div>
+        <div class="item-info">
+          <div class="item-name">{{ item.name }}</div>
+          <div class="item-price">₹{{ item.price }} × {{ item.qty }}</div>
+          <div class="item-qty">Subtotal: ₹{{ (item.price|float * item.qty|int)|int }}</div>
+        </div>
+        <form method="POST" action="/remove-from-cart/{{ item.product_id }}">
+          <button type="submit" class="remove-btn">✕ Remove</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="cart-summary">
+      <h2>Order Summary</h2>
+      {% for item in cart_items %}
+      <div class="summary-line">
+        <span>{{ item.name }} ×{{ item.qty }}</span>
+        <span>₹{{ (item.price|float * item.qty|int)|int }}</span>
+      </div>
+      {% endfor %}
+      <div class="summary-line">
+        <span>Delivery</span>
+        <span>{% if total >= 500 %}FREE{% else %}₹50{% endif %}</span>
+      </div>
+      <div class="summary-total">
+        <span>Total</span>
+        <span>₹{{ (total + (0 if total >= 500 else 50))|int }}</span>
+      </div>
+      <a href="/checkout" class="btn btn-amber btn-full" style="margin-top:1rem;padding:.85rem;">Proceed to Checkout</a>
+      <a href="/products" class="btn btn-outline btn-full" style="margin-top:.6rem;">Continue Shopping</a>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-cart">
+    <div>🛒</div>
+    <p>Your cart is empty. Add some delicious pickles!</p>
+    <a href="/products" class="btn btn-amber">Shop Now</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

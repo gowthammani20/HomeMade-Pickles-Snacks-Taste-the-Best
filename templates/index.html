@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% block title %}HomeMade Pickles & Snacks — Taste the Best{% endblock %}
+{% block extra_styles %}
+.hero {
+  background: linear-gradient(135deg, #3d2c1e 0%, #5a3d28 50%, #2d1e10 100%);
+  padding: 6rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8831a' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: .6;
+}
+.hero-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+.hero-tag {
+  display: inline-block;
+  background: rgba(200,131,26,.2);
+  border: 1px solid rgba(200,131,26,.4);
+  color: var(--amber-light);
+  padding: .35rem 1rem;
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  color: #faf0e0;
+  line-height: 1.1;
+  margin-bottom: 1.2rem;
+}
+.hero h1 em { color: var(--amber-light); font-style: italic; }
+.hero p {
+  color: #c8b898;
+  font-size: 1.2rem;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+.hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.hero-btns .btn { font-size: 1.05rem; padding: .8rem 2rem; }
+
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1.5rem 2rem;
+  background: var(--warm);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.badge-item {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .92rem; color: var(--muted);
+}
+.badge-item span { font-size: 1.2rem; }
+
+.section { max-width: 1100px; margin: 3rem auto; padding: 0 2rem; }
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 1rem;
+}
+.section-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: var(--brown);
+}
+.section-header a { color: var(--amber); text-decoration: none; font-size: .95rem; }
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1.5rem;
+}
+.product-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all .25s;
+  position: relative;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(61,44,30,.12);
+  border-color: var(--amber);
+}
+.product-emoji-box {
+  background: var(--warm);
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  border-bottom: 1px solid var(--border);
+}
+.product-info { padding: 1.1rem; }
+.product-category {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--green);
+  margin-bottom: .3rem;
+}
+.product-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: var(--brown);
+  margin-bottom: .3rem;
+}
+.product-desc {
+  font-size: .85rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: .8rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.product-footer { display: flex; justify-content: space-between; align-items: center; }
+.product-price { font-size: 1.2rem; font-weight: 600; color: var(--amber); }
+.product-price span { font-size: .75rem; color: var(--muted); font-weight: 400; }
+.add-btn {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: .45rem .9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: .9rem;
+  transition: all .2s;
+  font-family: 'Crimson Pro', serif;
+}
+.add-btn:hover { background: var(--green-light); transform: scale(1.05); }
+
+.why-section {
+  background: var(--brown);
+  color: #e8d8c0;
+  padding: 4rem 2rem;
+  margin-top: 3rem;
+}
+.why-inner { max-width: 1100px; margin: 0 auto; }
+.why-inner h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--amber-light);
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+.why-card { text-align: center; }
+.why-icon { font-size: 2.5rem; margin-bottom: .8rem; }
+.why-card h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--amber-light); margin-bottom: .5rem; }
+.why-card p { font-size: .9rem; color: #b0a090; line-height: 1.6; font-weight: 300; }
+{% endblock %}
+{% block content %}
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">🫙 Artisan · Preservative-Free · Handcrafted</div>
+    <h1>Taste the <em>Real</em><br>Homemade Flavours</h1>
+    <p>Traditional pickles and snacks crafted from heritage recipes, delivered fresh to your doorstep. Zero preservatives, full flavour.</p>
+    <div class="hero-btns">
+      <a href="/products" class="btn btn-amber">Shop Now</a>
+      <a href="/products?category=pickle" class="btn btn-outline" style="border-color:#a09070;color:#d4c4a8;">View Pickles</a>
+    </div>
+  </div>
+</div>
+
+<div class="badges">
+  <div class="badge-item"><span>✅</span> Zero Preservatives</div>
+  <div class="badge-item"><span>🌿</span> Farm Fresh Ingredients</div>
+  <div class="badge-item"><span>🚚</span> Free Delivery ₹500+</div>
+  <div class="badge-item"><span>🔄</span> 7-Day Returns</div>
+  <div class="badge-item"><span>⭐</span> 4.8 Rated</div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <h2>Featured Products</h2>
+    <a href="/products">View all →</a>
+  </div>
+  <div class="products-grid">
+    {% for product in products %}
+    <div class="product-card">
+      <a href="/product/{{ product.ProductID }}" style="text-decoration:none;">
+        <div class="product-emoji-box">{{ product.get('emoji','🥒') }}</div>
+      </a>
+      <div class="product-info">
+        <div class="product-category">{{ product.get('category','pickle') }}</div>
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-desc">{{ product.description }}</div>
+        <div class="product-footer">
+          <div class="product-price">₹{{ product.price }} <span>/ 250g</span></div>
+          <button class="add-btn" onclick="addToCart('{{ product.ProductID }}','{{ product.name }}','{{ product.price }}','{{ product.get('emoji','🥒') }}')">+ Cart</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="why-section">
+  <div class="why-inner">
+    <h2>Why HomeMade?</h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">👵</div>
+        <h3>Heritage Recipes</h3>
+        <p>Traditional recipes passed down through generations, unchanged and authentic.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🌱</div>
+        <h3>Local Farmers</h3>
+        <p>We source directly from local farmers, supporting sustainable agriculture.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🏺</div>
+        <h3>Artisan Process</h3>
+        <p>Hand-ground spices, cold-pressed oils, and slow fermentation for real flavour.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">📦</div>
+        <h3>Eco Packaging</h3>
+        <p>Glass jars and biodegradable packaging — tradition meets sustainability.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+async function addToCart(id, name, price, emoji) {
+  const res = await fetch('/add-to-cart', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({product_id: id, name, price, emoji})
+  });
+  const data = await res.json();
+  updateCartCount(data.count);
+  const btn = event.target;
+  btn.textContent = '✓ Added';
+  btn.style.background = '#4a7c59';
+  setTimeout(() => { btn.textContent = '+ Cart'; btn.style.background = ''; }, 1200);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}My Orders — HomeMade Pickles & Snacks{% endblock %}
+{% block extra_styles %}
+.orders-page { max-width: 800px; margin: 2.5rem auto; padding: 0 2rem; }
+.orders-page h1 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--brown); margin-bottom: 2rem; }
+.order-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.5rem; margin-bottom: 1.2rem;
+}
+.order-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 1rem; padding-bottom: .8rem;
+  border-bottom: 1px solid var(--border);
+}
+.order-id {
+  font-family: 'JetBrains Mono', monospace; font-size: 1rem;
+  color: var(--amber); font-weight: 600;
+}
+.order-date { font-size: .82rem; color: var(--muted); margin-top: .2rem; }
+.order-status {
+  padding: .3rem .8rem; border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace; font-size: .72rem;
+  font-weight: 600;
+}
+.status-confirmed { background: #e8f5e9; color: #2e7d32; }
+.status-delivered { background: #e3f2fd; color: #1565c0; }
+.order-items { font-size: .92rem; color: var(--muted); margin-bottom: .8rem; }
+.order-items span { margin-right: .8rem; }
+.order-total { font-size: 1.1rem; font-weight: 600; color: var(--brown); }
+
+.empty-orders { text-align: center; padding: 4rem 0; }
+.empty-orders div { font-size: 3.5rem; margin-bottom: 1rem; }
+.empty-orders p { color: var(--muted); margin-bottom: 1.5rem; }
+{% endblock %}
+{% block content %}
+<div class="orders-page">
+  <h1>📋 My Orders</h1>
+  {% if orders %}
+    {% for order in orders %}
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div class="order-id">#{{ order.OrderID }}</div>
+          <div class="order-date">{{ order.get('created_at','')[:10] }}</div>
+        </div>
+        <span class="order-status status-confirmed">{{ order.get('status','Confirmed') }}</span>
+      </div>
+      <div class="order-items">
+        {% for item in order.get('items',[]) %}
+        <span>{{ item.get('emoji','🥒') }} {{ item.name }} ×{{ item.qty }}</span>
+        {% endfor %}
+      </div>
+      <div class="order-total">Total: ₹{{ order.total }}</div>
+      {% if order.get('address') %}
+      <div style="font-size:.85rem;color:var(--muted);margin-top:.5rem;">📍 {{ order.address }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="empty-orders">
+    <div>📭</div>
+    <p>You haven't placed any orders yet.</p>
+    <a href="/products" class="btn btn-amber">Start Shopping</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

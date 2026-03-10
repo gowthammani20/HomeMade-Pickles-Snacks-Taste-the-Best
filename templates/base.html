@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}HomeMade Pickles & Snacks{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Crimson+Pro:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #faf6ef;
+  --warm: #f5ede0;
+  --brown: #3d2c1e;
+  --amber: #c8831a;
+  --amber-light: #e8a830;
+  --green: #4a7c59;
+  --green-light: #6aac7a;
+  --red: #c94040;
+  --text: #2a1f14;
+  --muted: #8a7060;
+  --border: #e0d4c0;
+  --white: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Crimson Pro', Georgia, serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* NAV */
+nav {
+  background: var(--brown);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--amber-light);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 700;
+}
+.nav-logo span { font-size: 1.5rem; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #d4c4a8;
+  text-decoration: none;
+  font-size: .95rem;
+  transition: color .2s;
+  font-family: 'Crimson Pro', serif;
+  font-weight: 400;
+  letter-spacing: .02em;
+}
+.nav-links a:hover { color: var(--amber-light); }
+
+.cart-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.cart-count {
+  position: absolute;
+  top: -8px; right: -10px;
+  background: var(--red);
+  color: white;
+  border-radius: 50%;
+  width: 18px; height: 18px;
+  font-size: .65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+
+.btn {
+  display: inline-block;
+  padding: .6rem 1.4rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all .2s;
+  letter-spacing: .03em;
+}
+.btn-amber {
+  background: var(--amber);
+  color: white;
+}
+.btn-amber:hover { background: var(--amber-light); transform: translateY(-1px); }
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--amber);
+  color: var(--amber);
+}
+.btn-outline:hover { background: var(--amber); color: white; }
+
+.btn-green {
+  background: var(--green);
+  color: white;
+}
+.btn-green:hover { background: var(--green-light); }
+
+.btn-full { width: 100%; text-align: center; display: block; }
+
+/* FLASH MESSAGES */
+.flash-container {
+  max-width: 1100px;
+  margin: 1rem auto 0;
+  padding: 0 2rem;
+}
+.flash {
+  padding: .8rem 1.2rem;
+  border-radius: 6px;
+  margin-bottom: .5rem;
+  font-size: .95rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.flash-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+.flash-error { background: #fce4ec; color: #c62828; border: 1px solid #f8bbd9; }
+.flash-info { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+
+/* FOOTER */
+footer {
+  background: var(--brown);
+  color: #a09080;
+  text-align: center;
+  padding: 2rem;
+  margin-top: 4rem;
+  font-size: .88rem;
+  font-family: 'Crimson Pro', serif;
+}
+footer strong { color: var(--amber-light); }
+
+{% block extra_styles %}{% endblock %}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo"><span>🥒</span> HomeMade</a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/products">Products</a></li>
+    {% if session.user_name %}
+      <li><a href="/orders">My Orders</a></li>
+      <li><a href="/logout">Logout ({{ session.user_name.split(' ')[0] }})</a></li>
+    {% else %}
+      <li><a href="/login">Login</a></li>
+      <li><a href="/register" class="btn btn-amber" style="padding:.35rem 1rem;font-size:.9rem;">Sign Up</a></li>
+    {% endif %}
+    <li>
+      <a href="/cart" class="cart-badge" style="color:#d4c4a8;text-decoration:none;">
+        🛒 Cart
+        <span class="cart-count" id="cart-count">
+          {{ session.get('cart', [])|length }}
+        </span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<div class="flash-container">
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="flash flash-{{ category }}">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+</div>
+
+{% block content %}{% endblock %}
+
+<footer>
+  <strong>HomeMade Pickles & Snacks</strong> — Preserving Traditions, One Jar at a Time 🫙<br>
+  <span style="font-size:.8rem;margin-top:.3rem;display:block;">Built on Flask · AWS EC2 · DynamoDB</span>
+</footer>
+
+<script>
+function updateCartCount(count) {
+  document.getElementById('cart-count').textContent = count;
+}
+</script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

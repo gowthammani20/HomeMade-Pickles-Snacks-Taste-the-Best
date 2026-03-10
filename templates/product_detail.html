@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — HomeMade Pickles & Snacks{% endblock %}
+{% block extra_styles %}
+.detail-page { max-width: 900px; margin: 3rem auto; padding: 0 2rem; }
+.breadcrumb { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+.breadcrumb a { color: var(--amber); text-decoration: none; }
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+@media(max-width:640px) { .detail-grid { grid-template-columns: 1fr; } }
+
+.detail-image {
+  background: var(--warm);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8rem;
+}
+.detail-category {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--green);
+  margin-bottom: .6rem;
+}
+.detail-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  color: var(--brown);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+.detail-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 1.2rem;
+}
+.detail-price span { font-size: 1rem; color: var(--muted); font-weight: 400; }
+.detail-desc {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+}
+.detail-meta { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.meta-chip {
+  background: var(--warm);
+  border: 1px solid var(--border);
+  padding: .35rem .8rem;
+  border-radius: 20px;
+  font-size: .85rem;
+  color: var(--muted);
+  display: flex; align-items: center; gap: .3rem;
+}
+.qty-row {
+  display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem;
+}
+.qty-label { font-size: .95rem; color: var(--muted); }
+.qty-input {
+  border: 1.5px solid var(--border);
+  padding: .45rem .8rem;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  width: 70px;
+  color: var(--brown);
+  background: white;
+}
+.add-cart-btn {
+  width: 100%;
+  padding: .9rem;
+  background: var(--amber);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all .2s;
+  margin-bottom: .8rem;
+}
+.add-cart-btn:hover { background: var(--amber-light); }
+{% endblock %}
+{% block content %}
+<div class="detail-page">
+  <div class="breadcrumb">
+    <a href="/">Home</a> › <a href="/products">Products</a> › {{ product.name }}
+  </div>
+  <div class="detail-grid">
+    <div class="detail-image">{{ product.get('emoji','🥒') }}</div>
+    <div>
+      <div class="detail-category">{{ product.get('category','pickle') }}</div>
+      <div class="detail-name">{{ product.name }}</div>
+      <div class="detail-price">₹{{ product.price }} <span>per 250g jar</span></div>
+      <p class="detail-desc">{{ product.description }}</p>
+      <div class="detail-meta">
+        <div class="meta-chip">✅ In Stock: {{ product.stock }} units</div>
+        <div class="meta-chip">🚚 Free ship ₹500+</div>
+        <div class="meta-chip">🌿 No preservatives</div>
+      </div>
+      <div class="qty-row">
+        <span class="qty-label">Qty:</span>
+        <input type="number" class="qty-input" id="qty" value="1" min="1" max="10">
+      </div>
+      <button class="add-cart-btn" onclick="addToCartDetail()">🛒 Add to Cart</button>
+      <a href="/cart" class="btn btn-outline btn-full">View Cart</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+async function addToCartDetail() {
+  const qty = parseInt(document.getElementById('qty').value) || 1;
+  for (let i = 0; i < qty; i++) {
+    await fetch('/add-to-cart', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        product_id: '{{ product.ProductID }}',
+        name: '{{ product.name }}',
+        price: '{{ product.price }}',
+        emoji: '{{ product.get("emoji","🥒") }}'
+      })
+    });
+  }
+  const res = await fetch('/add-to-cart', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({product_id:'dummy',name:'',price:'0',emoji:''})
+  });
+  // Simpler: just reload to update count
+  const btn = document.querySelector('.add-cart-btn');
+  btn.textContent = '✓ Added to Cart!';
+  btn.style.background = 'var(--green)';
+  setTimeout(() => location.reload(), 1000);
+}
+</script>
+{% endblock %}

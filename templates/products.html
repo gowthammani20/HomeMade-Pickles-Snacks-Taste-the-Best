@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Products — HomeMade Pickles & Snacks{% endblock %}
+{% block extra_styles %}
+.page-header {
+  background: linear-gradient(135deg, #3d2c1e, #5a3d28);
+  padding: 3rem 2rem;
+  color: #faf0e0;
+}
+.page-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  margin-bottom: .5rem;
+}
+.page-header p { color: #c8b898; font-weight: 300; }
+
+.products-page { max-width: 1100px; margin: 2.5rem auto; padding: 0 2rem; }
+
+.filter-bar {
+  display: flex; gap: .8rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center;
+}
+.filter-bar span { font-size: .9rem; color: var(--muted); margin-right: .3rem; }
+.filter-btn {
+  padding: .45rem 1.1rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: white;
+  color: var(--muted);
+  font-family: 'Crimson Pro', serif;
+  font-size: .95rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .2s;
+}
+.filter-btn:hover { border-color: var(--amber); color: var(--amber); }
+.filter-btn.active { background: var(--amber); color: white; border-color: var(--amber); }
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+.product-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all .25s;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(61,44,30,.12);
+  border-color: var(--amber);
+}
+.product-emoji-box {
+  background: var(--warm);
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4.5rem;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+}
+.product-info { padding: 1.2rem; }
+.product-category {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--green);
+  margin-bottom: .3rem;
+}
+.product-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  color: var(--brown);
+  margin-bottom: .3rem;
+}
+.product-desc {
+  font-size: .87rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: .9rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.stock-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem;
+  padding: .2rem .5rem;
+  border-radius: 3px;
+  background: #e8f5e9;
+  color: var(--green);
+  margin-bottom: .8rem;
+  display: inline-block;
+}
+.product-footer { display: flex; justify-content: space-between; align-items: center; }
+.product-price { font-size: 1.25rem; font-weight: 600; color: var(--amber); }
+.product-price span { font-size: .75rem; color: var(--muted); font-weight: 400; }
+.add-btn {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: .5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: .95rem;
+  transition: all .2s;
+  font-family: 'Crimson Pro', serif;
+  font-weight: 600;
+}
+.add-btn:hover { background: var(--green-light); }
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Our Products</h1>
+  <p>Handcrafted with love — pickles, snacks, and chutneys made the traditional way</p>
+</div>
+
+<div class="products-page">
+  <div class="filter-bar">
+    <span>Filter:</span>
+    <a href="/products" class="filter-btn {% if category=='all' %}active{% endif %}">All</a>
+    <a href="/products?category=pickle" class="filter-btn {% if category=='pickle' %}active{% endif %}">🥒 Pickles</a>
+    <a href="/products?category=snack" class="filter-btn {% if category=='snack' %}active{% endif %}">🌀 Snacks</a>
+    <a href="/products?category=chutney" class="filter-btn {% if category=='chutney' %}active{% endif %}">🫙 Chutneys</a>
+  </div>
+
+  <div class="products-grid">
+    {% for product in products %}
+    <div class="product-card">
+      <a href="/product/{{ product.ProductID }}" class="product-emoji-box" style="text-decoration:none;">
+        {{ product.get('emoji','🥒') }}
+      </a>
+      <div class="product-info">
+        <div class="product-category">{{ product.get('category','pickle') }}</div>
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-desc">{{ product.description }}</div>
+        <div class="stock-badge">In Stock: {{ product.stock }} units</div>
+        <div class="product-footer">
+          <div class="product-price">₹{{ product.price }} <span>/ 250g</span></div>
+          <button class="add-btn" onclick="addToCart('{{ product.ProductID }}','{{ product.name }}','{{ product.price }}','{{ product.get('emoji','🥒') }}',this)">+ Cart</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if not products %}
+  <div style="text-align:center;padding:4rem;color:var(--muted);">
+    <div style="font-size:3rem;margin-bottom:1rem;">🔍</div>
+    <p>No products found in this category.</p>
+    <a href="/products" class="btn btn-amber" style="margin-top:1rem;">View All Products</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+async function addToCart(id, name, price, emoji, btn) {
+  const res = await fetch('/add-to-cart', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({product_id: id, name, price, emoji})
+  });
+  const data = await res.json();
+  updateCartCount(data.count);
+  btn.textContent = '✓ Added';
+  btn.style.background = '#c8831a';
+  setTimeout(() => { btn.textContent = '+ Cart'; btn.style.background = ''; }, 1400);
+}
+</script>
+{% endblock %}
